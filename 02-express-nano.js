@@ -24,6 +24,7 @@ app.get('/', function(req, res) {
   res.send('it works')
 })
 
+// get
 app.get('/meetup/:name', function(req, res) {
   var meetupname = req.params.name
 
@@ -32,15 +33,42 @@ app.get('/meetup/:name', function(req, res) {
   })
 })
 
-app.put('/meeup/:name', function(req, res) {
+// create
+app.post('/meetup/:name', function(req, res) {
   var newmeetupname = req.params.name
 
   jsmeetupdb.insert({
     name: 'shanghai javascript meetup ' + newmeetupname + ' edition',
-    date: name,
+    date: newmeetupname,
     venue: 'Wiredcraft office'
   }, newmeetupname, function(err, body, header) {
     res.send(body)
+  })
+})
+
+// update
+app.put('/meetup/:name', function(req, res) {
+  var meetupname = req.params.name
+
+  jsmeetupdb.get(meetupname, function(err, body, header) {
+    body.name += ' [updated]'
+
+    jsmeetupdb.insert(body, function(err, result) {
+      res.send('update ' + meetupname + ' success!')
+    })
+  })
+})
+
+// delete
+app.delete('/meetup/:name', function(req, res) {
+  var meetupname = req.params.name
+
+  jsmeetupdb.head(meetupname, function(err, _, header) {
+    var _rev = header.etag
+
+    jsmeetupdb.destroy(meetupname, _rev, function(err, body) {
+      res.send('delete ' + meetupname + ' success!')
+    })
   })
 })
 
