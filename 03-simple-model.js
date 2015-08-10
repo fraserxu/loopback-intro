@@ -40,6 +40,7 @@ Meetup.prototype.delete = function (name, callback) {
   db.head(name, function(err, _, header) {
     var _rev = header.etag
 
+    // somehow this doesn't work :(
     db.destroy(name, _rev, function(err, body) {
       callback(err, body)
     })
